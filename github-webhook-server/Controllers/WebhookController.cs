@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -50,21 +51,21 @@ namespace github_webhook_server.Controllers
                 var commitId = mergeResult.Commit.Id.ToString();
                 _logger.LogInformation($"CommitId:{commitId}");
 
-                Execute($"/root/projects/WebhookTest/WebhookTest/build.sh {commitId}");
+                Execute($"/root/projects/WebhookTest/WebhookTest/build.sh", commitId);
             }
 
             return Ok(payload);
         }
 
         [NonAction]
-        private void Execute(string fileName)
+        private void Execute(string fileName, string commitId)
         {
             var startInfo = new ProcessStartInfo()
             {
                 FileName = "/bin/bash",
                 UseShellExecute = false,
                 CreateNoWindow = true,
-                Arguments = fileName
+                Arguments = $"{fileName} {commitId}"
             };
 
             Process.Start(startInfo);
