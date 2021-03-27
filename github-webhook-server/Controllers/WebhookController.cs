@@ -25,6 +25,11 @@ namespace github_webhook_server.Controllers
             _logger = logger;
         }
 
+        public IActionResult Get()
+        {
+            return Content("ok");
+        }
+
         [HttpPost]
         public IActionResult Post([FromBody] dynamic payload)
         {
@@ -50,19 +55,8 @@ namespace github_webhook_server.Controllers
             return Ok(payload);
         }
 
-        [HttpPost("Test")]
-        public async Task<IActionResult> Test()
-        {
-            using (StreamReader stream = new StreamReader(HttpContext.Request.Body,Encoding.UTF8))
-            {
-                string body =await stream.ReadToEndAsync();
-                JObject obj = JObject.Parse(body);
-                // body = "param=somevalue&param2=someothervalue"
-            }
-            return Ok();
-        }
-
-        public void Execute(string commandline)
+        [NonAction]
+        private void Execute(string commandline)
         {
             var startInfo = new ProcessStartInfo(commandline)
             {
