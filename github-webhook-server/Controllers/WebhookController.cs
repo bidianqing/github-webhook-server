@@ -50,20 +50,21 @@ namespace github_webhook_server.Controllers
                 var commitId = mergeResult.Commit.Id.ToString();
                 _logger.LogInformation($"CommitId:{commitId}");
 
-                Execute("chmod +x /root/projects/WebhookTest/WebhookTest/build.sh");
-                Execute("/root/projects/WebhookTest/WebhookTest/build.sh");
+                Execute($"/root/projects/WebhookTest/WebhookTest/build.sh {commitId}");
             }
+
             return Ok(payload);
         }
 
         [NonAction]
-        private void Execute(string commandline)
+        private void Execute(string fileName)
         {
             var startInfo = new ProcessStartInfo()
             {
-                FileName = commandline,
+                FileName = "/bin/bash",
                 UseShellExecute = false,
                 CreateNoWindow = true,
+                Arguments = fileName
             };
 
             Process.Start(startInfo);
