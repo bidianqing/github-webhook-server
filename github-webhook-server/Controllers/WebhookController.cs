@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using LibGit2Sharp;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 
 namespace github_webhook_server.Controllers
 {
@@ -36,11 +40,26 @@ namespace github_webhook_server.Controllers
 
             using (var repo = new Repository(workdirPath))
             {
-                Commands.Pull(repo, new Signature("tom", "tom@dianqing.com", DateTimeOffset.Now), null);
+                var mergeResult = Commands.Pull(repo, new Signature("tom", "tom@dianqing.com", DateTimeOffset.Now), null);
+
+                var commitId = mergeResult.Commit.Id.ToString();
+                _logger.LogInformation($"CommitId:{commitId}");
 
                 Execute("/root/build.sh");
             }
             return Ok(payload);
+        }
+
+        [HttpPost("Test")]
+        public async Task<IActionResult> Test()
+        {
+            using (StreamReader stream = new StreamReader(HttpContext.Request.Body,Encoding.UTF8))
+            {
+                string body =await stream.ReadToEndAsync();
+                JObject obj = JObject.Parse(body);
+                // body = "param=somevalue&param2=someothervalue"
+            }
+            return Ok();
         }
 
         public void Execute(string commandline)
