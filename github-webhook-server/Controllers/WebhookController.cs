@@ -50,7 +50,7 @@ namespace github_webhook_server.Controllers
                 var commitId = mergeResult.Commit.Id.ToString();
                 _logger.LogInformation($"CommitId:{commitId}");
 
-                Execute("/root/build.sh");
+                Execute("/root/projects/WebhookTest/WebhookTest/build.sh");
             }
             return Ok(payload);
         }
