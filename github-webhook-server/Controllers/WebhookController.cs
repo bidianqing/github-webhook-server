@@ -60,7 +60,7 @@ namespace github_webhook_server.Controllers
         {
             var startInfo = new ProcessStartInfo(commandline)
             {
-                UseShellExecute = false,
+                UseShellExecute = true,
                 CreateNoWindow = true
             };
 
