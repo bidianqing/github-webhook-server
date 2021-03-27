@@ -48,7 +48,16 @@ namespace github_webhook_server.Controllers
             {
                 var mergeResult = Commands.Pull(repo, new Signature("tom", "tom@dianqing.com", DateTimeOffset.Now), null);
 
-                var commitId = mergeResult.Commit.Id.ToString();
+                var commitId = mergeResult?.Commit?.Id?.ToString();
+                if (string.IsNullOrEmpty(commitId))
+                {
+                    commitId = DateTime.Now.ToString("yyyyMMddHHmm");
+                }
+                else
+                {
+                    commitId = commitId.Substring(0, 8);
+                }
+
                 _logger.LogInformation($"CommitId:{commitId}");
 
                 Execute($"/root/projects/WebhookTest/WebhookTest/build.sh", commitId);
