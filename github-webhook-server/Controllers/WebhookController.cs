@@ -74,10 +74,37 @@ namespace github_webhook_server.Controllers
                 FileName = "/bin/bash",
                 UseShellExecute = false,
                 CreateNoWindow = true,
-                Arguments = $"{fileName} {commitId}"
+                Arguments = $"{fileName} {commitId}",
+                RedirectStandardError = true,
+                RedirectStandardOutput = true,
             };
 
-            Process.Start(startInfo);
+            var process = Process.Start(startInfo);
+
+            process.OutputDataReceived += (object sender, DataReceivedEventArgs e) =>
+            {
+                if (!string.IsNullOrEmpty(e.Data))
+                {
+                    _logger.LogInformation("output>>" + e.Data);
+                }
+            };
+
+            process.BeginOutputReadLine();
+
+            process.ErrorDataReceived += (object sender, DataReceivedEventArgs e) =>
+            {
+                if (!string.IsNullOrEmpty(e.Data))
+                {
+                    _logger.LogError("error>>" + e.Data);
+                }
+            };
+
+            process.BeginErrorReadLine();
+
+            process.WaitForExit();
+            process.Close();
+
+            _logger.LogInformation("发布成功");
         }
     }
 }
